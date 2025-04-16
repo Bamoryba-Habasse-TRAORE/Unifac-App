@@ -10,6 +10,9 @@ def create_app():
     # Enregistrement des blueprints
     app.register_blueprint(auth, url_prefix='/auth')  # Routes d'authentification
     app.register_blueprint(views, url_prefix='/views')  # Routes des vues (accueil, dashboard...)
+    @app.route('/')
+    def index():
+        return redirect(url_for('views.home_fr'))
     return app
 
 if __name__ == '__main__':
