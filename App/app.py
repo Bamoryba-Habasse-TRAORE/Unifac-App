@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for
-from auth import auth
-from views import views
+from .auth import auth
+from .views import views
 from . import os 
 
 def create_app():
