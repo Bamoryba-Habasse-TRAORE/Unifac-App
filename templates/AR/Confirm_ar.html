@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="{{ url_for('static', filename='css/Confirm.css') }}"><title>التحقق من الحساب</title></head><body><div class="container"><h2>تحقق من حسابك</h2><p>تم إرسال رمز مكون من 6 أرقام إلى بريدك الإلكتروني.<br>أدخله أدناه لتأكيد العنوان.</p><form method="POST" action="/verify" id="confirmation-form"><div class="code-container"><input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required></div><input type="hidden" name="confirmation_code" id="confirmation_code"><button type="submit">تأكيد</button></form><form action="{{ url_for('auth.resend_confirmation', lang='ar') }}" method="get"><button type="submit" class="btn btn-outline-primary">إعادة إرسال الرمز</button></form><small class="info">أدخل الرمز الذي تلقيته عبر البريد الإلكتروني.</small></div><script>const form = document.getElementById('confirmation-form');
+    const inputs = document.querySelectorAll('.code');
+    const hiddenInput = document.getElementById('confirmation_code');
+
+    form.addEventListener('submit', function(e) {
+      let code = '';
+      inputs.forEach(input => code += input.value);
+      hiddenInput.value = code;
+    });
+
+    inputs.forEach((input, idx) => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key >= 0 && e.key <= 9) {
+          inputs[idx].value = '';
+          setTimeout(() => {
+            if (idx < inputs.length - 1) inputs[idx + 1].focus();
+          }, 10);
+        } else if (e.key === 'Backspace') {
+          setTimeout(() => {
+            if (idx > 0) inputs[idx - 1].focus();
+          }, 10);
+        }
+      });
+    });
+
+    inputs[0].focus();</script></body></html>
