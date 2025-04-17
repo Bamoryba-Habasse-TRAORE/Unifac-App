@@ -3,10 +3,11 @@ from flask import Blueprint, render_template, current_app, request
 from flask_login import login_required, current_user
 from .unifac_diffusion import unifac_diffusion
 from .models import Calculation
-from xhtml2pdf import pisa
 from flask import make_response
 from . import db
 from .Dic import compound_translations
+from weasyprint import HTML
+from datetime import datetime
 
 views = Blueprint('views', __name__, template_folder=os.path.join(os.path.pardir, 'templates'), static_folder=os.path.abspath("static"))
 # Fonction pour valider l'email
@@ -139,15 +140,20 @@ def calculshistory_ar():
 @views.route('/export_pdf')
 @login_required
 def export_pdf():
-    calculations = Calculation.query.filter_by(user_id=current_user.id).order_by(Calculation.timestamp.desc()).all()
-    rendered = render_template("FR/Calculations_History.html", user=current_user, calculations=calculations)
-    pdf = io.BytesIO()
-    pisa_status = pisa.CreatePDF(rendered, dest=pdf)
-    if pisa_status.err:
-        return "Erreur lors de la génération du PDF", 500
-    response = make_response(pdf.getvalue())
+    calculations = Calculation.query.filter_by(user_id=current_user.id)\
+                                     .order_by(Calculation.timestamp.desc())\
+                                     .all()
+    html = render_template(
+      "pdf.html",
+      user=current_user,
+      calculations=calculations,
+      now=datetime.now()
+    )
+    pdf = HTML(string=html).write_pdf()
+    response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename=historique_diffusion.pdf'
+    response.headers['Content-Disposition'] =\
+        'attachment; filename=historique_diffusion.pdf'
     return response
 #..................translate...........................#
 def translate_to_english(compound_name, language='en'):
