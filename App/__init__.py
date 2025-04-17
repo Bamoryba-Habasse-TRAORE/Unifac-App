@@ -50,11 +50,5 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return Formulaire.query.get(int(id))
-    # Route pour initialiser la base (à supprimer après le premier usage)
-    @app.route('/initdb')
-    def initdb():
-        db.create_all()
-        return "✅ Base de données PostgreSQL initialisée avec succès !"
-
 
     return app
