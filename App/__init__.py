@@ -56,4 +56,5 @@ def create_app():
         db.create_all()
         return "✅ Base de données PostgreSQL initialisée avec succès !"
 
+
     return app
