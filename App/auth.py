@@ -506,7 +506,7 @@ def reset_password_token_fr(token):
             flash("Votre mot de passe a été mis à jour.", "success")
             return redirect(url_for('auth.login_fr'))
 
-    return render_template('FR/Reset_password.html', token=token)
+    return render_template('FR/Reset_Password.html', token=token)
 
 # -------------------- Fonction pour le reset password en anglais -------------------- #
 @auth.route('/reset_password_en', methods=['GET', 'POST'])
@@ -564,7 +564,7 @@ def reset_password_token_en(token):
             flash("Your password has been updated.", "success")
             return redirect(url_for('auth.login_en'))
 
-    return render_template('EN/Reset_password.html', token=token)
+    return render_template('EN/Reset_Password.html', token=token)
 
 # -------------------- Fonction pour le reset password en arabe -------------------- #
 @auth.route('/reset_password_ar', methods=['GET', 'POST'])
@@ -622,4 +622,4 @@ def reset_password_token_ar(token):
             flash("تم تحديث كلمة المرور الخاصة بك.", "success")
             return redirect(url_for('auth.login_ar'))
 
-    return render_template('AR/Reset_password.html', token=token)
+    return render_template('AR/Reset_Password.html', token=token)
