@@ -1,3 +1,4 @@
-from .app import create_app  # Le point (.) indique qu'on importe depuis le même package App
+# App/wsgi.py
+from App import create_app
 
 app = create_app()
