@@ -13,7 +13,8 @@ babel = Babel()
 load_dotenv()
 
 def create_app():
-    app = Flask(__name__, template_folder=os.path.join(os.path.pardir, 'templates'), static_folder=os.path.abspath("static"))
+    app = Flask(__name__, template_folder="templates", static_folder="static")
+
 
     # Configuration générale
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
