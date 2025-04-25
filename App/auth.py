@@ -264,6 +264,15 @@ def send_confirmation_email(user_email, confirmation_code):
                   sender='habassetraore36@gmail.com',
                   recipients=[user_email])
     msg.body = plain_texts.get(locale, plain_texts['fr'])
+    logo_path = os.path.join(current_app.root_path, 'static', 'images', 'l2.png')
+    with open(logo_path, 'rb') as f:
+        msg.attach(
+            filename='logo.png',
+            content_type='image/png',
+            data=f.read(),
+            disposition='inline',
+            headers=[['Content-ID', '<calc_diff_logo>']]
+        )
     msg.html = html_body
     try:
         mail.send(msg)
