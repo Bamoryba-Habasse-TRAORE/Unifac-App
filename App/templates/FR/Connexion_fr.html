@@ -1,18 +1,19 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connexion | CALC-DIFF</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Connexion.css') }}"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"></head><body><form action="{{ url_for('auth.login_fr') }}" method="POST"><div class="logo-1"><a href="{{ url_for('views.home_fr') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo"></a></div><h1>Connexion</h1>{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}<ul class="flash-messages">{% for category, message in messages %}<li class="flash-{{ category }}">{{ message }}</li>{% endfor %}</ul>{% endif %} {% endwith %}<div class="inputs"><input type="email" name="email" placeholder="Email" required> <input type="password" name="password" placeholder="Mot de passe" required><div class="btn-wrapper"><button id="login-btn" type="submit">Se Connecter</button></div></div><a href="{{ url_for('auth.reset_password_fr') }}" class="forgot-password-link">Mot de passe oublié ?</a></form><script>const emailField = document.querySelector('input[name="email"]');
-    const passField  = document.querySelector('input[name="password"]');
-    const btn        = document.querySelector('#login-btn');
+  const passField  = document.querySelector('input[name="password"]');
+  const btn        = document.querySelector('#login-btn');
 
-    function shiftButton() {
-      const positions = ['shift-left','shift-top','shift-right','shift-bottom'];
-      const current   = positions.find(c => btn.classList.contains(c));
-      if (current) btn.classList.remove(current);
-      const next = positions[Math.floor(Math.random()*positions.length)];
-      btn.classList.add(next);
+  function shiftButton() {
+    const positions = ['shift-left','shift-top','shift-right','shift-bottom'];
+    const current = positions.find(c => btn.classList.contains(c));
+    if (current) btn.classList.remove(current);
+    const next = positions[Math.floor(Math.random() * positions.length)];
+    btn.classList.add(next);
+  }
+
+  btn.addEventListener('click', function(e) {
+    if (!emailField.value || !passField.value) {
+      e.preventDefault();  
+      shiftButton();      
     }
-    btn.addEventListener('click', function(e) { if (!uname.value || !pass.value) { e.preventDefault(); shiftButton(); } });
-    document.querySelector('form').addEventListener('submit', function(e) {
-      if (!emailField.value || !passField.value) {
-        e.preventDefault();
-        shiftButton();
-      }
-    });</script></body></html>
+  });</script>
+    </body></html>
