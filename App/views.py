@@ -1,4 +1,4 @@
-import re, os, io
+import re, os, base64
 from flask import Blueprint, render_template, current_app, request
 from flask_login import login_required, current_user
 from .unifac_diffusion import unifac_diffusion
@@ -143,12 +143,12 @@ def export_pdf():
     calculations = Calculation.query.filter_by(user_id=current_user.id)\
                                      .order_by(Calculation.timestamp.desc())\
                                      .all()
-    html = render_template(
-      "pdf.html",
-      user=current_user,
-      calculations=calculations,
-      now=datetime.now()
-    )
+    logo_path = os.path.join("website", "static", "images", "l2.png")
+    with open(logo_path, "rb") as image_file:
+        logo_data = base64.b64encode(image_file.read()).decode('utf-8')
+        logo_src = f"data:image/png;base64,{logo_data}"
+
+    html = render_template("pdf.html",user=current_user,calculations=calculations,now=datetime.now(),logo_src=logo_src)
     pdf = HTML(string=html, base_url=request.url_root).write_pdf()
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'

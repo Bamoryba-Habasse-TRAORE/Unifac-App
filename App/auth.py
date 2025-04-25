@@ -1,4 +1,4 @@
-import re, os
+import re, os , base64
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -249,36 +249,45 @@ def logout():
 # ----------------- Envoi de l'email de confirmation et autres fonctions ----------------- #
 def send_confirmation_email(user_email, confirmation_code):
     locale = str(get_locale())
+
     subjects = {
         'fr': "Confirmation de compte",
         'en': "Account Confirmation",
         'ar': "تأكيد الحساب"
     }
+
     plain_texts = {
         'fr': f"Bonjour,\n\nVotre compte a été créé avec succès. Veuillez utiliser le code suivant pour confirmer votre compte : {confirmation_code}\n\nMerci de votre confiance,\nL'équipe Calc-Diff",
         'en': f"Hello,\n\nYour account has been successfully created. Please use the following code to confirm your account: {confirmation_code}\n\nThank you for trusting us,\nThe Calc-Diff Team",
         'ar': f"مرحبًا,\n\nتم إنشاء حسابك بنجاح. الرجاء استخدام الرمز التالي لتأكيد حسابك: {confirmation_code}\n\nشكرًا لثقتك بنا،\nفريق Calc-Diff"
     }
-    html_body = render_template('msg.html', code=confirmation_code, lang=locale)
-    msg = Message(subject=subjects.get(locale, subjects['fr']),
-                  sender='habassetraore36@gmail.com',
-                  recipients=[user_email])
-    msg.body = plain_texts.get(locale, plain_texts['fr'])
+
     logo_path = os.path.join(current_app.root_path, 'static', 'images', 'l2.png')
-    with open(logo_path, 'rb') as f:
-        msg.attach(
-            filename='logo.png',
-            content_type='image/png',
-            data=f.read(),
-            disposition='inline',
-            headers=[['Content-ID', '<calc_diff_logo>']]
-        )
+    with open(logo_path, "rb") as image_file:
+        logo_data = base64.b64encode(image_file.read()).decode("utf-8")
+        logo_src = f"data:image/png;base64,{logo_data}"
+    subject_title = subjects.get(locale, subjects['fr'])
+    html_body = render_template(
+    'msg.html',
+    code=confirmation_code,
+    lang=locale,
+    logo_src=logo_src,
+    subject_title=subject_title,
+    message=plain_texts[locale].split("\n\n")[1],
+    closing=plain_texts[locale].split("\n\n")[-1])
+
+    msg = Message(
+        subject=subjects.get(locale, subjects['fr']),
+        sender='habassetraore36@gmail.com',
+        recipients=[user_email]
+    )
+    msg.body = plain_texts.get(locale, plain_texts['fr'])
     msg.html = html_body
+
     try:
         mail.send(msg)
     except Exception as e:
         print(f"Erreur lors de l'envoi de l'e-mail de confirmation : {e}")
-
 def generate_confirmation_code():
     return ''.join(secrets.choice('0123456789') for _ in range(6))
 
