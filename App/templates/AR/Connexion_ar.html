@@ -1,19 +1,17 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تسجيل الدخول | CALC-DIFF</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Connexion.css') }}"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"></head><body><form action="{{ url_for('auth.login_ar') }}" method="POST"><div class="logo-1"><a href="{{ url_for('views.home_ar') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo"></a></div><h1>اتصال</h1>{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}<ul class="flash-messages">{% for category, message in messages %}<li class="flash-{{ category }}">{{ message }}</li>{% endfor %}</ul>{% endif %} {% endwith %}<div class="inputs"><input type="email" placeholder="البريد الإلكتروني" name="email" required> <input type="password" placeholder="شعار" name="password" required><div class="btn-wrapper"><button id="login-btn" type="submit">تسجيل الدخول</button></div></div><a href="{{ url_for('auth.reset_password_ar') }}" class="forgot-password-link">هل نسيت كلمة المرور الخاصة بك؟</a></form><script>const emailField = document.querySelector('input[name="email"]');
-  const passField  = document.querySelector('input[name="password"]');
-  const btn        = document.querySelector('#login-btn');
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تسجيل الدخول | CALC-DIFF</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Connexion.css') }}"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"></head><body><form action="{{ url_for('auth.login_ar') }}" method="POST"><div class="logo-1"><a href="{{ url_for('views.home_ar') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo"></a></div><h1>اتصال</h1>{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}<ul class="flash-messages">{% for category, message in messages %}<li class="flash-{{ category }}">{{ message }}</li>{% endfor %}</ul>{% endif %} {% endwith %}<div class="inputs"><input type="email" placeholder="البريد الإلكتروني" name="email" required> <input type="password" placeholder="شعار" name="password" required><div class="btn-wrapper"><button id="login-btn" type="submit">تسجيل الدخول</button></div></div><a href="{{ url_for('auth.reset_password_ar') }}" class="forgot-password-link">هل نسيت كلمة المرور الخاصة بك؟</a></form><script>const uname = document.querySelector('input[name="email"]');
+  const pass  = document.querySelector('input[name="password"]');
+  const btn   = document.querySelector('#login-btn');
 
-  function shiftButton() {
-    const positions = ['shift-left','shift-top','shift-right','shift-bottom'];
-    const current = positions.find(c => btn.classList.contains(c));
-    if (current) btn.classList.remove(current);
-    const next = positions[Math.floor(Math.random() * positions.length)];
-    btn.classList.add(next);
+  function bounceButton() {
+    btn.classList.remove('bounce');
+    void btn.offsetWidth;
+    btn.classList.add('bounce');
   }
 
   btn.addEventListener('click', function(e) {
-    if (!emailField.value || !passField.value) {
-      e.preventDefault();  
-      shiftButton();      
+    if (!uname.value || !pass.value) {
+      e.preventDefault();
+      bounceButton();
     }
   });</script>
 </body></html>
