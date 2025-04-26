@@ -163,28 +163,49 @@ def translate_to_english(compound_name, language='en'):
 
 # --- Simulation de diffusion de gaz ---
 
-@views.route('/simulation')
-def simulation():
-    # Affiche la page de simulation (détecte la langue si tu le souhaites)
-    # Ici on sert la version FR, adapte selon ta logique multilingue
-    return render_template("FR/simulation.html")
-@views.route('/simulation_en')
-def simulation_en():
-    return render_template("EN/simulation.html")
-@views.route('/simulation_ar')
-def simulation_ar():
-    return render_template("AR/simulation.html")
+@views.route('/simulation/<lang>', methods=['GET', 'POST'])
+def simulation(lang):
+    # Gérer la logique de langue en fonction du paramètre 'lang' dans l'URL
+    if lang == 'fr':
+        template = 'FR/simulation.html'
+    elif lang == 'en':
+        template = 'EN/simulation.html'
+    elif lang == 'ar':
+        template = 'AR/simulation.html'
+    else:
+        # Langue par défaut (FR)
+        template = 'FR/simulation.html'
+
+    # Si c'est une requête POST, on récupère les données du formulaire et effectue le calcul
+    if request.method == 'POST':
+        compA = request.form.get('compA')
+        compB = request.form.get('compB')
+        T0 = float(request.form.get('T0', 300))
+        fracA = float(request.form.get('fracA', 0.5))
+
+        # Appel de ta fonction de calcul UNIFAC pour obtenir les propriétés
+        props = compute_properties(compA, compB, T0, fracA)
+
+        # Retourner le résultat au template
+        return render_template(template, result=props)
+    
+    # Si c'est une requête GET, afficher juste le formulaire
+    return render_template(template)
+
 
 @views.route('/simulation/config', methods=['POST'])
 def simulation_config():
+    # Récupérer les données JSON envoyées via POST
     data = request.get_json()
+
+    # Extraire les paramètres de la requête
     compA = data.get('compA')
     compB = data.get('compB')
-    T0    = float(data.get('T0', 300))
+    T0 = float(data.get('T0', 300))
     fracA = float(data.get('fracA', 0.5))
 
-    # appelle ta fonction de calcul UNIFAC qui renverra un dict avec
-    # massA, massB, radiusA, radiusB, D_A, D_B, T0
+    # Appel de la fonction de calcul UNIFAC
     props = compute_properties(compA, compB, T0, fracA)
 
+    # Retourner les résultats sous forme de JSON
     return jsonify(props)
