@@ -1,5 +1,5 @@
 import re, os, io
-from flask import Blueprint, render_template, current_app, request
+from flask import Blueprint, render_template, current_app, request, jsonify
 from flask_login import login_required, current_user
 from .unifac_diffusion import unifac_diffusion
 from .models import Calculation
@@ -8,6 +8,7 @@ from . import db
 from .Dic import compound_translations
 from weasyprint import HTML
 from datetime import datetime
+from .unifac_diffusion import compute_properties
 
 views = Blueprint('views', __name__, template_folder=os.path.join(os.path.pardir, 'templates'), static_folder=os.path.abspath("static"))
 # Fonction pour valider l'email
@@ -159,3 +160,31 @@ def export_pdf():
 def translate_to_english(compound_name, language='en'):
     inverse_translations = {"fr": {v["fr"]: k for k, v in compound_translations.items()}, "ar": {v["ar"]: k for k, v in compound_translations.items()},"en": {v["en"]: k for k, v in compound_translations.items()},}
     return inverse_translations.get(language, {}).get(compound_name, None)
+
+# --- Simulation de diffusion de gaz ---
+
+@views.route('/simulation')
+def simulation():
+    # Affiche la page de simulation (détecte la langue si tu le souhaites)
+    # Ici on sert la version FR, adapte selon ta logique multilingue
+    return render_template("FR/simulation.html")
+@views.route('/simulation_en')
+def simulation_en():
+    return render_template("EN/simulation.html")
+@views.route('/simulation_ar')
+def simulation_ar():
+    return render_template("AR/simulation.html")
+
+@views.route('/simulation/config', methods=['POST'])
+def simulation_config():
+    data = request.get_json()
+    compA = data.get('compA')
+    compB = data.get('compB')
+    T0    = float(data.get('T0', 300))
+    fracA = float(data.get('fracA', 0.5))
+
+    # appelle ta fonction de calcul UNIFAC qui renverra un dict avec
+    # massA, massB, radiusA, radiusB, D_A, D_B, T0
+    props = compute_properties(compA, compB, T0, fracA)
+
+    return jsonify(props)

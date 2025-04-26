@@ -92,3 +92,41 @@ def unifac_diffusion(comp1_name, comp2_name, x1, T, D_exp=None):
             raise ValueError("D_exp ne peut pas être zéro pour le calcul de l'erreur")
         error_pct = abs(D_exp - D) / D_exp * 100
     return D, error_pct
+
+def compute_properties(compA_name, compB_name, T0, fracA):
+    """
+    Renvoie les propriétés physiques nécessaires à la simulation :
+      - massA, massB  : masses (unités arbitraires ou g/mol)
+      - radiusA, radiusB : rayons (unités arbitraires)
+      - D_A, D_B      : coefficients de diffusion (m²/s)
+      - T0            : température initiale (K)
+    """
+    # 1) Calcul du coefficient de diffusion du mélange
+    #    On récupère D_AB (m²/s) via ta fonction UNIFAC
+    D_AB, _ = unifac_diffusion(compA_name, compB_name, fracA, T0)
+
+    # 2) Extraction de la décomposition en groupes
+    compA = compounds[compA_name]["groups"]
+    compB = compounds[compB_name]["groups"]
+
+    # 3) Calcul des volumes R (proxy de rayon) et surfaces Q
+    rA, qA = compute_RQ(compA)
+    rB, qB = compute_RQ(compB)
+
+    # 4) Définition d’un rayon effectif (échelle arbitraire, ajustable)
+    radiusA = rA     # par ex. directement R
+    radiusB = rB
+
+    # 5) Approximation de la masse (échelle arbitraire, ou à remplacer par du vrai g/mol)
+    massA = rA * 10  # ex. R × 10
+    massB = rB * 10
+
+    return {
+        'massA': massA,
+        'massB': massB,
+        'radiusA': radiusA,
+        'radiusB': radiusB,
+        'D_A': D_AB,
+        'D_B': D_AB,
+        'T0': T0
+    }
