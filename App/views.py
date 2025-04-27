@@ -161,7 +161,7 @@ def translate_to_english(compound_name, language='en'):
     inverse_translations = {"fr": {v["fr"]: k for k, v in compound_translations.items()}, "ar": {v["ar"]: k for k, v in compound_translations.items()},"en": {v["en"]: k for k, v in compound_translations.items()},}
     return inverse_translations.get(language, {}).get(compound_name, None)
 
-# --- Simulation de diffusion de gaz ---
+# --- Simulation de diffusion de gaz ---#
 
 @views.route('/simulation')
 def simulation():
