@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 views = Blueprint('views', __name__, template_folder=os.path.join(os.path.pardir, 'templates'), static_folder=os.path.abspath("static"))
-# Fonction pour valider l'email
+# Fonction pour valider l'email#
 def is_valid_email(email):
     """ Vérifie si l'email est au format valide """
     return re.match(r"[^@]+@[^@]+\.[^@]+", email) is not None
@@ -19,7 +19,7 @@ def is_valid_email(email):
 @views.route('/')
 def home_fr():
     current_app.logger.info("Rendering Home_fr.html template ...")
-    # Vérification de l'email de l'utilisateur actuel
+    # Vérification de l'email de l'utilisateur actuel#
     if current_user.is_authenticated and not is_valid_email(current_user.email):
         current_app.logger.warning("Email non valide pour l'utilisateur connecté")
     return render_template("FR/Home_fr.html", user=current_user)
@@ -27,7 +27,7 @@ def home_fr():
 @views.route('/dashboard_fr', methods=['GET', 'POST'])
 @login_required
 def dashboard_fr():
-    # On passe le dictionnaire complet pour afficher les noms traduits
+    # On passe le dictionnaire complet pour afficher les noms traduits#
     compounds = {key: compound_translations[key]["fr"] for key in compound_translations}
     if request.method == 'POST':
         try:
@@ -36,7 +36,7 @@ def dashboard_fr():
             x_A = float(request.form['x_A'].replace(',', '.'))
             T = float(request.form['T'])
             D_exp = float(request.form['D_exp'])
-            # Convertir le nom affiché en nom technique (anglais)
+            # Convertir le nom affiché en nom technique (anglais)#
             compound_A_english = translate_to_english(compound_A, 'fr')
             compound_B_english = translate_to_english(compound_B, 'fr')
             if compound_A_english is None or compound_B_english is None:
@@ -53,7 +53,7 @@ def dashboard_fr():
 # ------------------- DASHBOARD EN ------------------- #
 @views.route('/home_en')
 def home_en():
-    # Vérification de l'email de l'utilisateur actuel
+    # Vérification de l'email de l'utilisateur actuel#
     if current_user.is_authenticated and not is_valid_email(current_user.email):
         current_app.logger.warning("Invalid email for the logged-in user")
     return render_template("EN/Home_en.html", user=current_user)
@@ -61,7 +61,7 @@ def home_en():
 @views.route('/dashboard_en', methods=['GET', 'POST'])
 @login_required
 def dashboard_en():
-    # Dictionnaire complet pour afficher les noms traduits en anglais
+    # Dictionnaire complet pour afficher les noms traduits en anglais#
     compounds = {key: compound_translations[key]["en"] for key in compound_translations}
     if request.method == 'POST':
         try:
@@ -70,7 +70,7 @@ def dashboard_en():
             x_A = float(request.form['x_A'].replace(',', '.'))
             T = float(request.form['T'])
             D_exp = float(request.form['D_exp'])
-            # Convertir le nom affiché en nom technique (anglais)
+            # Convertir le nom affiché en nom technique (anglais)#
             compound_A_english = translate_to_english(compound_A, 'en')
             compound_B_english = translate_to_english(compound_B, 'en')
             if compound_A_english is None or compound_B_english is None:
@@ -87,7 +87,7 @@ def dashboard_en():
 # ------------------- DASHBOARD AR ------------------- #
 @views.route('/home_ar')
 def home_ar():
-    # Vérification de l'email de l'utilisateur actuel
+    # Vérification de l'email de l'utilisateur actuel#
     if current_user.is_authenticated and not is_valid_email(current_user.email):
         current_app.logger.warning("البريد الإلكتروني غير صالح للمستخدم المتصل")
     return render_template("AR/Home_ar.html", user=current_user)
@@ -95,7 +95,7 @@ def home_ar():
 @views.route('/dashboard_ar', methods=['GET', 'POST'])
 @login_required
 def dashboard_ar():
-    # Dictionnaire complet pour afficher les noms traduits en arabe
+    # Dictionnaire complet pour afficher les noms traduits en arabe#
     compounds = {key: compound_translations[key]["ar"] for key in compound_translations}
     if request.method == 'POST':
         try:
@@ -104,7 +104,7 @@ def dashboard_ar():
             x_A = float(request.form['x_A'].replace(',', '.'))
             T = float(request.form['T'])
             D_exp = float(request.form['D_exp'])
-            # Convertir le nom affiché en nom technique (anglais)
+            # Convertir le nom affiché en nom technique (anglais)#
             compound_A_english = translate_to_english(compound_A, 'ar')
             compound_B_english = translate_to_english(compound_B, 'ar')
             if compound_A_english is None or compound_B_english is None:
@@ -162,13 +162,14 @@ def translate_to_english(compound_name, language='en'):
     return inverse_translations.get(language, {}).get(compound_name, None)
 
 # --- Simulation de diffusion de gaz ---#
-
 @views.route('/simulation')
 def simulation():
     return render_template("FR/simulation.html")
+
 @views.route('/simulation_en')
 def simulation_en():
     return render_template("EN/simulation.html")
+
 @views.route('/simulation_ar')
 def simulation_ar():
     return render_template("AR/simulation.html")
