@@ -1,5 +1,5 @@
-import re, os, io
-from flask import Blueprint, render_template, current_app, request, jsonify
+import re, os
+from flask import Blueprint, render_template, current_app, request
 from flask_login import login_required, current_user
 from .unifac_diffusion import unifac_diffusion
 from .models import Calculation
@@ -8,7 +8,7 @@ from . import db
 from .Dic import compound_translations
 from weasyprint import HTML
 from datetime import datetime
-from .unifac_diffusion import compute_properties
+
 
 views = Blueprint('views', __name__, template_folder=os.path.join(os.path.pardir, 'templates'), static_folder=os.path.abspath("static"))
 # Fonction pour valider l'email
