@@ -165,8 +165,6 @@ def translate_to_english(compound_name, language='en'):
 
 @views.route('/simulation')
 def simulation():
-    # Affiche la page de simulation (détecte la langue si tu le souhaites)
-    # Ici on sert la version FR, adapte selon ta logique multilingue
     return render_template("FR/simulation.html")
 @views.route('/simulation_en')
 def simulation_en():
@@ -174,17 +172,3 @@ def simulation_en():
 @views.route('/simulation_ar')
 def simulation_ar():
     return render_template("AR/simulation.html")
-
-@views.route('/simulation/config', methods=['POST'])
-def simulation_config():
-    data = request.get_json()
-    compA = data.get('compA')
-    compB = data.get('compB')
-    T0    = float(data.get('T0', 300))
-    fracA = float(data.get('fracA', 0.5))
-
-    # appelle ta fonction de calcul UNIFAC qui renverra un dict avec
-    # massA, massB, radiusA, radiusB, D_A, D_B, T0
-    props = compute_properties(compA, compB, T0, fracA)
-
-    return jsonify(props)
