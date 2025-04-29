@@ -45,7 +45,7 @@ def create_app():
 
     @app.errorhandler(404)
     def handle_404(error):
-        lang = str(get_locale())
+        lang = str(get_locale()).upper()
         return render_template(f"{lang}/404.html"), 404
 
     from .models import Formulaire
