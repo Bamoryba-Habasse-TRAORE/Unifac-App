@@ -7,9 +7,10 @@ body {
   color: #333;
   display: flex;
   min-height: 100vh;
+  direction: rtl
 }
 
-/* Sidebar */
+
 .sidebar {
   width: 260px;
   background-color: #20232a;
@@ -38,7 +39,7 @@ body {
   justify-content: space-between;
 }
 
-/* Flag icons sizing */
+
 .Fr { width: 18px; height: auto; display: inline-block; vertical-align: middle; margin-right: 8px; }
 .En { width: 18px; height: auto; display: inline-block; vertical-align: middle; margin-right: 8px; }
 .Ar { width: 18px; height: auto; display: inline-block; vertical-align: middle; margin-right: 8px; }
@@ -54,9 +55,9 @@ body {
   transition: transform 0.3s ease;
 }
 
-/* Content */
+
 .content {
-  margin-right: 260px;
+  margin-left: 260px;
   padding: 40px 30px;
   flex-grow: 1;
   width: calc(100% - 260px);
@@ -67,7 +68,6 @@ header h1 {
   color: #20232a;
 }
 
-/* Stats Form Layout */
 .stats form {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -95,14 +95,13 @@ header h1 {
   border-radius: 6px;
 }
 
-/* Form ordering */
 .stats form .card:nth-child(1) { order: 1; }
 .stats form .card:nth-child(2) { order: 2; }
 .stats form .card:nth-child(4) { order: 3; }
 .stats form .card:nth-child(3) { order: 4; }
 .stats form .card:nth-child(5) { order: 5; }
 
-/* Submit Button */
+
 .stats form button {
   order: 6;
   grid-column: 1 / -1;
@@ -120,7 +119,7 @@ header h1 {
   background-color: chocolate;
 }
 
-/* Responsive: single column on small screens */
+
 @media (max-width: 600px) {
   .stats form {
     grid-template-columns: 1fr;
@@ -130,12 +129,12 @@ header h1 {
   }
 }
 
-/* ==== Sign Out Animated Button ==== */
-/* Base style for the logout button */
+
+
 .logout-button {
   display: inline-flex;
   align-items: center;
-  background-color: #1e1e2f;
+  background-color: #181818;
   color: #fff;
   padding: 6px 12px;
   border-radius: 6px;
@@ -152,7 +151,6 @@ header h1 {
   font-size: 14px;
 }
 
-/* Wrapper for the door + icon */
 .icon-wrapper {
   position: relative;
   width: 30px;
@@ -160,7 +158,6 @@ header h1 {
   perspective: 200px;
 }
 
-/* Door SVG */
 .doorway {
   width: 100%;
   height: 100%;
@@ -178,7 +175,7 @@ header h1 {
   transition: transform 200ms ease;
 }
 
-/* The person icon */
+
 .person-icon {
   position: absolute;
   top: 50%;
@@ -191,14 +188,14 @@ header h1 {
   z-index: 4;
 }
 
-/* Active animations */
+
 .logout-button.active .door {
-  animation: openDoor 0.8s ease-out forwards;
+  animation: openDoor 1s  ease-out forwards;
 }
 .logout-button.active .person-icon {
   animation:
-    walkOut   1.2s ease-in-out 0.5s forwards,
-    fallDown  1s   ease-in   1.8s forwards;
+    walkOut   1.2s ease-in-out 0.8s forwards,
+    fallDown  1s   ease-in   1.9s forwards;
 }
 
 /* Keyframes */
