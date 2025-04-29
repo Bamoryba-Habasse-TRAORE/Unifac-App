@@ -1,10 +1,10 @@
 import os
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_babel import Babel
 from dotenv import load_dotenv
+from flask import Flask, render_template , request
 
 # Initialisation des extensions
 db = SQLAlchemy()
@@ -50,5 +50,21 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return Formulaire.query.get(int(id))
+    @babel.localeselector
+    def get_locale():
+        # Priorité au paramètre ?lang=fr|en|ar
+        lang = request.args.get('lang')
+        if lang and lang in app.config['BABEL_SUPPORTED_LOCALES']:
+            return lang
+        # Sinon on choisit la meilleure langue du navigateur
+        return request.accept_languages.best_match(
+            app.config['BABEL_SUPPORTED_LOCALES']
+        )
+    # --- Handler 404 global, qui choisit le dossier de langue ---
+    @app.errorhandler(404)
+    def page_not_found(e):
+        locale = get_locale()
+        # Cela va chercher templates/FR/404.html ou templates/EN/404.html, etc.
+        return render_template(f"{locale}/404.html"), 404
 
     return app
