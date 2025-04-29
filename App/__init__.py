@@ -33,9 +33,10 @@ def create_app():
     babel.init_app(app)
 
     # Sélecteur automatique de la langue
-    @babel.localeselector
+    @babel.localeselector_function
     def select_locale():
-        return request.accept_languages.best_match(app.config['BABEL_SUPPORTED_LOCALES'])
+     return request.accept_languages.best_match(app.config['BABEL_SUPPORTED_LOCALES'])
+
 
     # — Login Manager —
     login_manager = LoginManager()
