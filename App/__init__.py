@@ -50,7 +50,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return Formulaire.query.get(int(id))
-    @babel.localeselector
+    @babel.locale_selector
     def get_locale():
         # Priorité au paramètre ?lang=fr|en|ar
         lang = request.args.get('lang')
