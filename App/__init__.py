@@ -48,10 +48,10 @@ def create_app():
 
     # Enregistrement des blueprints
     from .auth import auth
-    from .views import views
+    from .views import views, chatbot  # Déplacer chatbot ici
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(chatbot)
+    app.register_blueprint(chatbot)  # Enregistrement de chatbot ici
 
     @app.errorhandler(404)
     def handle_404(error):
