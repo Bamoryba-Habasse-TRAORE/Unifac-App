@@ -16,7 +16,7 @@
   });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>Estimation du Coefficient de Diffusion</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_fr') }}"><div class="card"><h3>Composé A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Composé B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Température (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Fraction molaire x de A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Coefficient de diffusion expérimental</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculer</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Coefficient de Diffusion Calculé</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Erreur Calculée</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Erreur</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- CHATBOT WIDGET CALC-DIFF -->
 {% if current_user.is_authenticated %}
 <div id="chatbot-mascot" class="chatbot-mascot">
-  <img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="Mascotte">
+  <img src="{{ url_for('static', filename='images/mascot.png') }}" alt="Mascotte">
 </div>
 <div id="chatbot-container">
   <div id="chat-header">
@@ -32,7 +32,7 @@
 {% endif %}
 <style>
   /* flotter mascotte */
-  #chatbot-mascot {position:fixed;bottom:280px;right:20px;width:60px;cursor:pointer;animation:float 3s ease-in-out infinite;}
+  #chatbot-mascot {position:fixed;bottom:300px;right:20px;width:80px;cursor:pointer;animation:float 3s ease-in-out infinite;}
   #chatbot-mascot img {width: 100%;height: auto;}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   /* chatbox */

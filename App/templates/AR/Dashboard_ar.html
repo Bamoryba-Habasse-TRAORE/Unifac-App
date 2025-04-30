@@ -16,7 +16,7 @@
     });</script></aside><main class="content" id="content"><header><div style="margin-right:270px"></div><h1>تقدير معامل الانتشار</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_ar') }}"><div class="card"><h3>المركب A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>المركب B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>درجة الحرارة (كلفن)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>الكسور المولية x للمركب A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>معامل الانتشار التجريبي</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">حساب</button></form></section>{% if result %}<section class="results"><div class="card"><h3>معامل الانتشار المحسوب</h3><p>{{ result.D_AB }} سم²/ث</p></div><div class="card"><h3>النسبة المئوية للخطأ</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>خطأ</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- واجهة الدردشة CALC-DIFF -->
 {% if current_user.is_authenticated %}
 <div id="chatbot-mascot" class="chatbot-mascot">
-  <img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="التميمة">
+  <img src="{{ url_for('static', filename='images/mascot.png') }}" alt="التميمة">
 </div>
 <div id="chatbot-container">
   <div id="chat-header">
@@ -32,7 +32,7 @@
 {% endif %}
 <style>
   /* تحريك التميمة */
-  #chatbot-mascot {position:fixed;bottom:280px;left:20px;width:60px;cursor:pointer;animation:float 3s ease-in-out infinite;}
+  #chatbot-mascot {position:fixed;bottom:300px;left:20px;width:80px;cursor:pointer;animation:float 3s ease-in-out infinite;}
   #chatbot-mascot img {width: 100%;height: auto;}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   /* صندوق الدردشة */
