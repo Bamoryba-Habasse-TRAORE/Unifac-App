@@ -1,5 +1,5 @@
 import re, os
-from flask import Blueprint, render_template, current_app, request, jsonify
+from flask import Blueprint, render_template, current_app, request
 from flask_login import login_required, current_user
 from .unifac_diffusion import unifac_diffusion
 from .models import Calculation
@@ -8,7 +8,7 @@ from . import db
 from .Dic import compound_translations
 from weasyprint import HTML
 from datetime import datetime
-from .chatbot_openai import ask_openai
+
 
 
 
@@ -176,13 +176,3 @@ def simulation_en():
 @views.route('/simulation_ar')
 def simulation_ar():
     return render_template("AR/simulation.html")
-#...........Chatbot................................#
-
-@views.route('/chatbot', methods=['POST'])
-def chatbot():
-    data = request.get_json()
-    user_msg = data.get("message", "")
-    lang = data.get("lang", "fr")
-
-    bot_reply = ask_openai(user_msg, lang)
-    return jsonify({"response": bot_reply})

@@ -5,8 +5,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_babel import Babel, get_locale
 from jinja2 import TemplateNotFound
-from dotenv import load_dotenv
-from .views import chatbot  
+from dotenv import load_dotenv 
 
 db = SQLAlchemy()
 mail = Mail()
@@ -48,10 +47,12 @@ def create_app():
 
     # Enregistrement des blueprints
     from .auth import auth
-    from .views import views, chatbot  # Déplacer chatbot ici
+    from .views import views
+    from .chatbot_openai import chatbot_bp
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(chatbot)  # Enregistrement de chatbot ici
+    app.register_blueprint(chatbot_bp)
+
 
     @app.errorhandler(404)
     def handle_404(error):
