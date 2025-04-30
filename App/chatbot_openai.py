@@ -3,17 +3,26 @@
 import os
 from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify
-from openai import OpenAI  # nouvelle interface v1.x
+from openai import OpenAI, OpenAIError
 
-# Charger les variables d'environnement
+# 1. Charger les variables d'environnement AU PLUS TOT
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# 2. Récupération de la clé
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise RuntimeError(
+        "La variable d'environnement OPENAI_API_KEY n'est pas définie. "
+        "Veuillez l'ajouter à votre .env ou à votre configuration d'environnement."
+    )
+
+# 3. Instanciation du client
+client = OpenAI(api_key=api_key)
 
 # Définir un blueprint pour le chatbot
 chatbot_bp = Blueprint('chatbot', __name__)
 
 def ask_openai(message, lang="fr"):
-    # Construire le prompt selon la langue
     prompt = {
         "fr": f"Tu es l'assistant officiel de l'application web CALC-DIFF. Réponds de manière claire, précise et conviviale. Question : {message}",
         "en": f"You are the official assistant of the CALC-DIFF web application. Answer clearly, precisely, and helpfully. Question: {message}",
@@ -21,16 +30,18 @@ def ask_openai(message, lang="fr"):
     }.get(lang, message)
 
     try:
-        # Utilisation de la nouvelle interface OpenAI v1.x
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=400,
             temperature=0.7
         )
-        # Accès au contenu du message
         return response.choices[0].message.content.strip()
+    except OpenAIError as e:
+        # Erreur liée à l'API OpenAI
+        return f"Une erreur OpenAI est survenue : {e}"
     except Exception as e:
+        # Toute autre erreur
         return f"Une erreur est survenue : {e}"
 
 @chatbot_bp.route('/chatbot', methods=['POST'])
