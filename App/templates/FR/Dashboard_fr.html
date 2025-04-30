@@ -1,30 +1,75 @@
-<!DOCTYPE html><html lang="fr" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"><title>Tableau de bord – Coefficient de diffusion</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Dashboard.css') }}"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"><script>function toggleSubMenu(id, arrowId) {
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-…" crossorigin="anonymous" referrerpolicy="no-referrer"><title>Dashboard Admin - Coefficient de Diffusion</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Dashboard.css') }}"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"><script>function toggleSubMenu(id, arrowId) {
   const subMenu = document.getElementById(id);
   const arrow = document.getElementById(arrowId);
   const isHidden = subMenu.style.display === 'none' || subMenu.style.display === '';
   subMenu.style.display = isHidden ? 'block' : 'none';
   arrow.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
-}</script></head><body><div class="dashboard"><aside class="sidebar" id="sidebar"><div class="logo-2"><a href="{{ url_for('views.home_fr') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo" style="width:100%;margin-bottom:20px"></a></div><ul><li><a href="#" onclick='toggleSubMenu("langueSubMenu","langueArrow")'>Langues<span id="langueArrow" class="arrow">&#9654;</span></a><ul id="langueSubMenu"><li><a href="{{ url_for('views.dashboard_fr') }}"><img src="https://flagsapi.com/FR/flat/64.png" class="Fr"> Français</a></li><li><a href="{{ url_for('views.dashboard_en') }}"><img src="https://flagsapi.com/GB/flat/64.png" class="En"> Anglais</a></li><li><a href="{{ url_for('views.dashboard_ar') }}"><img src="https://flagsapi.com/MA/flat/64.png" class="Ar"> Arabe</a></li></ul></li><li><a href="{{ url_for('views.calculshistory_fr') }}">Historique</a></li><li><a href="{{ url_for('views.simulation') }}">Accéder à la simulation</a></li><li><a href="#" onclick='toggleSubMenu("docSubMenu","docArrow")'>Documentation<span id="docArrow" class="arrow">&#9654;</span></a><ul id="docSubMenu" class="Doc-container"><li><a href="http://processs.free.fr/page/methode-unifac/3015" target="_blank">Méthode UNIFAC</a></li><li><a href="{{ url_for('static', filename='pdf/proprietes_gaz_liquides.pdf') }}" target="_blank">Propriétés des gaz et liquides</a></li><li><a href="{{ url_for('static', filename='pdf/mitrovic2012.pdf') }}" target="_blank">Mitrovic 2012</a></li></ul></li></ul><div class="logout"><a href="{{ url_for('auth.logout') }}?lang=fr" id="signout-btn" class="logout-button"><span class="logout-text"><i class="fa-solid fa-right-to-bracket"></i>Déconnexion</span><div class="icon-wrapper"><svg class="doorway" viewBox="0 0 80 60"><rect x="0" y="0" width="80" height="60" rx="8" fill="#4f4f7f"/><rect class="door" x="0" y="0" width="40" height="60" rx="8" fill="#2a2a3a"/></svg><i class="fa-solid fa-person-walking person-icon"></i></div></a></div></aside><main class="content" id="content"><header><h1>Estimation du coefficient de diffusion</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_fr') }}"><div class="card"><h3>Composé A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Composé B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Température (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Fraction molaire x du composé A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Coefficient de diffusion expérimental</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculer</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Coefficient de diffusion calculé</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Erreur en pourcentage</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Erreur</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div>{% if current_user.is_authenticated %}<div id="chatbot-mascot"><img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="Mascotte"></div><div id="chatbot-container"><div id="chat-header"><h4>Assistant CALC-DIFF</h4><span id="chat-close">&times;</span></div><div id="chat-messages"></div><div id="chat-input-area"><input type="text" id="chat-input" placeholder="Écrivez votre question..."><button id="chat-send">Envoyer</button></div></div>{% endif %}<style>#chatbot-mascot{position:fixed;bottom:280px;right:20px;width:10px;cursor:pointer;animation:float 3s ease-in-out infinite}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}#chatbot-container{position:fixed;bottom:20px;right:20px;width:320px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.15);display:none;flex-direction:column;overflow:hidden;font-family:'Segoe UI',sans-serif;z-index:1000}#chat-header{background:#20232a;color:#fff;padding:12px;display:flex;justify-content:space-between;align-items:center}#chat-messages{flex:1;padding:12px;overflow-y:auto;font-size:14px;color:#333}#chat-messages .user{text-align:right;color:#06c}#chat-messages .bot{text-align:left;color:#20232a}#chat-input-area{display:flex;border-top:1px solid #eee}#chat-input{flex:1;border:none;padding:10px;font-size:14px}#chat-send{background:#20232a;color:#fff;border:none;padding:0 16px;cursor:pointer;font-size:14px}#chat-send:hover{background:#d2691e}</style><script>document.addEventListener('DOMContentLoaded',()=>{ 
-const m=document.getElementById('chatbot-mascot'),
-      c=document.getElementById('chatbot-container'),
-      closeBtn=document.getElementById('chat-close'),
-      sendBtn=document.getElementById('chat-send'),
-      input=document.getElementById('chat-input'),
-      msgs=document.getElementById('chat-messages'),
-      lang='{{ lang }}';
+}</script></head><body><div class="dashboard"><aside class="sidebar" id="sidebar"><div class="logo-2"><a href="{{ url_for('views.home_fr') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo" loading="lazy" style="width:100%;margin-bottom:20px"></a></div><ul><li><a href="#" onclick='toggleSubMenu("langueSubMenu","langueArrow")'>Langues<span id="langueArrow" class="arrow">&#9654;</span></a><ul id="langueSubMenu"><li><a href="{{ url_for('views.dashboard_fr') }}"><img src="https://flagsapi.com/FR/flat/64.png" class="Fr">Français</a></li><li><a href="{{ url_for('views.dashboard_en') }}"><img src="https://flagsapi.com/GB/flat/64.png" class="En">Anglais</a></li><li><a href="{{ url_for('views.dashboard_ar') }}"><img src="https://flagsapi.com/MA/flat/64.png" class="Ar">Arabe</a></li></ul></li><li><a href="{{ url_for('views.calculshistory_fr') }}">Historique</a></li><li><a href="{{ url_for('views.simulation') }}">Accéder à la simulation</a></li><li><a href="#" onclick='toggleSubMenu("docSubMenu","docArrow")'>Documentation<span id="docArrow" class="arrow">&#9654;</span></a><ul id="docSubMenu" class="Doc-container"><li><a href="http://processs.free.fr/page/methode-unifac/3015" target="_blank">Méthode UNIFAC</a></li><li><a href="{{ url_for('static', filename='pdf/proprietes_gaz_liquides.pdf') }}" target="_blank">Propriétés des Gaz et Liquides</a></li><li><a href="{{ url_for('static', filename='pdf/mitrovic2012.pdf') }}" target="_blank">Mitrovic 2012</a></li></ul></li></ul><div class="logout"><a href="{{ url_for('auth.logout') }}?lang=fr" id="signout-btn" class="logout-button"><span class="logout-text"><i class="fa-solid fa-right-to-bracket"></i>  Se Déconnecter </span><div class="icon-wrapper"><svg class="doorway" viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="80" height="60" rx="8" fill="#4f4f7f"/><rect class="door" x="0" y="0" width="40" height="60" rx="8" fill="#2a2a3a"/></svg><i class="fa-solid fa-person-walking person-icon"></i></div></a></div><script>document.getElementById('signout-btn').addEventListener('click', e => {
+    const btn = e.currentTarget;
+    if (btn.classList.contains('active')) return;
+    btn.classList.add('active');
+    btn.querySelector('.icon-wrapper').addEventListener(
+      'animationend',
+      () => window.location = btn.href,
+      { once: true }
+    );
+  });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>Estimation du Coefficient de Diffusion</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_fr') }}"><div class="card"><h3>Composé A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Composé B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Température (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Fraction molaire x de A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Coefficient de diffusion expérimental</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculer</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Coefficient de Diffusion Calculé</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Erreur Calculée</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Erreur</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- CHATBOT WIDGET CALC-DIFF -->
+{% if current_user.is_authenticated %}
+<div id="chatbot-mascot" class="chatbot-mascot">
+  <img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="Mascotte">
+</div>
+<div id="chatbot-container">
+  <div id="chat-header">
+    <h4>{{ _('Assistant CALC-DIFF') }}</h4>
+    <span id="chat-close">&times;</span>
+  </div>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <input type="text" id="chat-input" placeholder="{{ _('Posez votre question...') }}">
+    <button id="chat-send">{{ _('Envoyer') }}</button>
+  </div>
+</div>
+{% endif %}
+<style>
+  /* flotter mascotte */
+  #chatbot-mascot {position:fixed;bottom:280px;right:20px;width:10px;cursor:pointer;animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  /* chatbox */
+  #chatbot-container{position:fixed;bottom:20px;right:20px;width:320px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;flex-direction:column;overflow:hidden;font-family:'Segoe UI',sans-serif;z-index:1000}
+  #chat-header{background:#20232a;color:#fff;padding:12px;display:flex;justify-content:space-between;align-items:center}
+  #chat-messages{flex:1;padding:12px;overflow-y:auto;font-size:14px;color:#333}
+  #chat-messages .user{text-align:right;color:#06c}
+  #chat-messages .bot{text-align:left;color:#20232a}
+  #chat-input-area{display:flex;border-top:1px solid #eee}
+  #chat-input{flex:1;border:none;padding:10px;font-size:14px}
+  #chat-send{background:#20232a;color:#fff;border:none;padding:0 16px;cursor:pointer;font-size:14px}
+  #chat-send:hover{background:chocolate}
+</style>
 
-m.onclick=()=>c.style.display=c.style.display==='flex'?'none':'flex';
-closeBtn.onclick=()=>c.style.display='none';
-sendBtn.onclick=send; input.onkeypress=e=>e.key==='Enter'&&send();
+<script>
+  document.addEventListener('DOMContentLoaded',()=>{ 
+    const m=document.getElementById('chatbot-mascot'),
+          c=document.getElementById('chatbot-container'),
+          closeBtn=document.getElementById('chat-close'),
+          sendBtn=document.getElementById('chat-send'),
+          input=document.getElementById('chat-input'),
+          msgs=document.getElementById('chat-messages'),
+          lang='{{ lang }}';
 
-function send(){
-  let t=input.value.trim(); if(!t)return;
-  add(t,'user');
-  fetch('/chatbot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,lang})})
-    .then(r=>r.json()).then(d=>add(d.response,'bot'));
-  input.value='';
-}
-function add(t,u){
-  let d=document.createElement('div');d.className=u;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
-}
-});</script></body></html>
+    m.onclick=()=>c.style.display=c.style.display==='flex'?'none':'flex';
+    closeBtn.onclick=()=>c.style.display='none';
+    sendBtn.onclick=send; input.onkeypress=e=>e.key==='Enter'&&send();
+
+    function send(){
+      let t=input.value.trim(); if(!t)return;
+      add(t,'user');
+      fetch('/chatbot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,lang})})
+        .then(r=>r.json()).then(d=>add(d.response,'bot'));
+      input.value='';
+    }
+    function add(t,u){
+      let d=document.createElement('div');d.className=u;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+    }
+  });
+</script>
+</body></html>
