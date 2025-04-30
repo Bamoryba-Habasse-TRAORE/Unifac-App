@@ -16,7 +16,7 @@
     });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>Diffusion Coefficient Estimation</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_en') }}"><div class="card"><h3>Compound A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Compound B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Temperature (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Mole Fraction x of A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Experimental Diffusion Coefficient</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculate</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Calculated Diffusion Coefficient</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Calculated Error</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Error</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- CHATBOT WIDGET CALC-DIFF -->
 {% if current_user.is_authenticated %}
 <div id="chatbot-mascot">
-  <img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="Mascot">
+<img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="Mascot">
 </div>
 <div id="chatbot-container">
   <div id="chat-header">
@@ -35,7 +35,7 @@
   #chatbot-mascot {position:fixed;bottom:280px;right:20px;width:10px;cursor:pointer;animation:float 3s ease-in-out infinite;}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   /* chatbox */
-  #chatbot-container{position:fixed;bottom:20px;right:20px;width:320px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;flex-direction:column;overflow:hidden;font-family:'Segoe UI',sans-serif;z-index:1000}
+  #chatbot-container{position:fixed;bottom:20px;right:20px;width:10px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;flex-direction:column;overflow:hidden;font-family:'Segoe UI',sans-serif;z-index:1000}
   #chat-header{background:#20232a;color:#fff;padding:12px;display:flex;justify-content:space-between;align-items:center}
   #chat-messages{flex:1;padding:12px;overflow-y:auto;font-size:14px;color:#333}
   #chat-messages .user{text-align:right;color:#06c}
