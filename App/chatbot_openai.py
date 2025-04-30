@@ -3,7 +3,10 @@ from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify
 from openai import OpenAI, OpenAIError
 
-# Charger les variables d'environnement\load_dotenv()
+# Charger les variables d'environnement
+load_dotenv()
+
+# Récupération de la clé API
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     raise RuntimeError(
@@ -16,6 +19,7 @@ client = OpenAI(api_key=api_key)
 
 # Définition du blueprint pour le chatbot
 chatbot_bp = Blueprint('chatbot', __name__)
+
 
 def ask_openai(message, lang="fr"):
     # Sélection du prompt selon la langue
@@ -46,6 +50,7 @@ def ask_openai(message, lang="fr"):
 
     except Exception as e:
         return f"Une erreur inattendue est survenue : {e}"
+
 
 @chatbot_bp.route('/chatbot', methods=['POST'])
 def chatbot_route():
