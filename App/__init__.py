@@ -6,24 +6,18 @@ from flask_mail import Mail
 from flask_babel import Babel, get_locale
 from jinja2 import TemplateNotFound
 from dotenv import load_dotenv
+from .views import chatbot  
 
 db = SQLAlchemy()
 mail = Mail()
 babel = Babel()
 load_dotenv()
 
-
 def select_locale():
-    """
-    Callback pour Flask-Babel :
-    1) si l'URL contient ?lang=fr|en|ar, on l'utilise
-    2) sinon on se base sur l'en-tête Accept-Language du navigateur
-    """
     lang = request.args.get('lang', type=str)
     if lang in ['fr', 'en', 'ar']:
         return lang
     return request.accept_languages.best_match(['fr', 'en', 'ar'])
-
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -38,7 +32,7 @@ def create_app():
     app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
-
+    
     # Configuration Babel
     app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
     app.config['BABEL_SUPPORTED_LOCALES'] = ['fr', 'en', 'ar']
@@ -57,6 +51,7 @@ def create_app():
     from .views import views
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(chatbot)
 
     @app.errorhandler(404)
     def handle_404(error):

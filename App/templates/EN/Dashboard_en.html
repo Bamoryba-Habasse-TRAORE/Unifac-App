@@ -13,4 +13,62 @@
         () => window.location = btn.href,
         { once: true }
       );
-    });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>Diffusion Coefficient Estimation</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_en') }}"><div class="card"><h3>Compound A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Compound B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Temperature (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Mole Fraction x of A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Experimental Diffusion Coefficient</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculate</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Calculated Diffusion Coefficient</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Calculated Error</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Error</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div></body></html>
+    });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>Diffusion Coefficient Estimation</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_en') }}"><div class="card"><h3>Compound A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Compound B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Temperature (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Mole Fraction x of A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Experimental Diffusion Coefficient</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculate</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Calculated Diffusion Coefficient</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Calculated Error</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Error</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- CHATBOT WIDGET CALC-DIFF -->
+<div id="chatbot-mascot">
+  <img src="{{ url_for('static', filename='images/mascot.jpg') }}" alt="Mascot">
+</div>
+<div id="chatbot-container">
+  <div id="chat-header">
+    <h4>{{ _('CALC-DIFF Assistant') }}</h4>
+    <span id="chat-close">&times;</span>
+  </div>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <input type="text" id="chat-input" placeholder="{{ _('Ask your question...') }}">
+    <button id="chat-send">{{ _('Send') }}</button>
+  </div>
+</div>
+
+<style>
+  /* float mascot */
+  #chatbot-mascot {position:fixed;bottom:280px;right:20px;width:60px;cursor:pointer;animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  /* chatbox */
+  #chatbot-container{position:fixed;bottom:20px;right:20px;width:320px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;flex-direction:column;overflow:hidden;font-family:'Segoe UI',sans-serif;z-index:1000}
+  #chat-header{background:#20232a;color:#fff;padding:12px;display:flex;justify-content:space-between;align-items:center}
+  #chat-messages{flex:1;padding:12px;overflow-y:auto;font-size:14px;color:#333}
+  #chat-messages .user{text-align:right;color:#06c}
+  #chat-messages .bot{text-align:left;color:#20232a}
+  #chat-input-area{display:flex;border-top:1px solid #eee}
+  #chat-input{flex:1;border:none;padding:10px;font-size:14px}
+  #chat-send{background:#20232a;color:#fff;border:none;padding:0 16px;cursor:pointer;font-size:14px}
+  #chat-send:hover{background:chocolate}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded',()=>{ 
+    const m=document.getElementById('chatbot-mascot'),
+          c=document.getElementById('chatbot-container'),
+          closeBtn=document.getElementById('chat-close'),
+          sendBtn=document.getElementById('chat-send'),
+          input=document.getElementById('chat-input'),
+          msgs=document.getElementById('chat-messages'),
+          lang='{{ lang }}';
+
+    m.onclick=()=>c.style.display=c.style.display==='flex'?'none':'flex';
+    closeBtn.onclick=()=>c.style.display='none';
+    sendBtn.onclick=send; input.onkeypress=e=>e.key==='Enter'&&send();
+
+    function send(){
+      let t=input.value.trim(); if(!t)return;
+      add(t,'user');
+      fetch('/chatbot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,lang})})
+        .then(r=>r.json()).then(d=>add(d.response,'bot'));
+      input.value='';
+    }
+    function add(t,u){
+      let d=document.createElement('div');d.className=u;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+    }
+  });
+</script>
+</body></html>
