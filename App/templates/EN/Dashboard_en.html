@@ -96,7 +96,7 @@
     input.value = '';
     sendBtn.disabled = true;
 
-    fetch('/chatbot', {
+    fetch("/dialogflow/chatbot", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: t, lang })
