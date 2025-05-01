@@ -1,6 +1,8 @@
 import os
 import uuid
+import json
 from google.cloud import dialogflow_v2 as dialogflow
+from google.oauth2 import service_account
 from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify, current_app
 import traceback
@@ -15,7 +17,15 @@ LANG_MAP = {"fr": "fr-FR", "en": "en-US", "ar": "ar-X"}  # Remplace "ar-X" par l
 
 def detect_intent_texts(session_id, text, language_code="fr-FR"):
     try:
-        session_client = dialogflow.SessionsClient()
+        # Assurer que credentials_json existe
+        if not credentials_json:
+            raise ValueError("La variable d'environnement GOOGLE_APPLICATION_CREDENTIALS_JSON est manquante.")
+
+        # Charger les credentials à partir de la variable d'environnement
+        credentials_info = json.loads(credentials_json)
+        credentials = service_account.Credentials.from_service_account_info(credentials_info)
+        
+        session_client = dialogflow.SessionsClient(credentials=credentials)
         session = session_client.session_path(PROJECT_ID, session_id)
 
         text_input = dialogflow.TextInput(text=text, language_code=language_code)
