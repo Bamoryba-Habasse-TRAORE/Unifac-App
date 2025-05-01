@@ -28,10 +28,10 @@ def detect_intent_texts(session_id, text, language_code="fr-FR"):
         raise
 
     try:
-        # Write credentials to temp file for compatibility
+                # Write the raw JSON credentials to a temp file so that pem newlines are preserved
         fd, credentials_path = tempfile.mkstemp(suffix=".json")
         with os.fdopen(fd, 'w') as tmp:
-            json.dump(creds_dict, tmp)
+            tmp.write(raw_credentials)
         credentials = service_account.Credentials.from_service_account_file(credentials_path)
         os.remove(credentials_path)
     except Exception as e:
