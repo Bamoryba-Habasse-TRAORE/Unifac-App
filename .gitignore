@@ -2,3 +2,4 @@ __pycache__/
 .env
 instance/
 .venv/
+/instance/dialogflow-client-*.json

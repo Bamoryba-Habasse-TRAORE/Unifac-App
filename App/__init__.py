@@ -31,7 +31,7 @@ def create_app():
     app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
-    
+    app.config['DIALOGFLOW_PROJECT_ID'] = app.config.get('DIALOGFLOW_PROJECT_ID')
     # Configuration Babel
     app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
     app.config['BABEL_SUPPORTED_LOCALES'] = ['fr', 'en', 'ar']
@@ -48,7 +48,7 @@ def create_app():
     # Enregistrement des blueprints
     from .auth import auth
     from .views import views
-    from .chatbot_openai import chatbot_bp
+    from .chatbot_dialogflow import chatbot_bp
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(chatbot_bp)
