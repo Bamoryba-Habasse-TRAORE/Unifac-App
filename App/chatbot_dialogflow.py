@@ -9,7 +9,7 @@ load_dotenv()
 
 dialogflow_bp = Blueprint('dialogflow', __name__)
 PROJECT_ID = os.getenv("DIALOGFLOW_PROJECT_ID")
-
+credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 # Mapping des langues supportées
 LANG_MAP = {"fr": "fr-FR", "en": "en-US", "ar": "ar-X"}  # Remplace "ar-X" par le bon code Dialogflow si nécessaire
 
