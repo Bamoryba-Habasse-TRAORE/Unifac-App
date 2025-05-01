@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+import tempfile
 from google.cloud import dialogflow_v2 as dialogflow
 from google.oauth2 import service_account
 from dotenv import load_dotenv
@@ -11,12 +12,7 @@ load_dotenv()
 
 dialogflow_bp = Blueprint('dialogflow', __name__)
 PROJECT_ID = os.getenv("DIALOGFLOW_PROJECT_ID")
-
-# On lit la variable et on retire d'éventuels quotes simples autour
 raw_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON", "")
-if raw_credentials.startswith("'") and raw_credentials.endswith("'"):
-    raw_credentials = raw_credentials[1:-1]
-
 # Mapping des langues supportées
 LANG_MAP = {"fr": "fr-FR", "en": "en-US", "ar": "ar-X"}
 
@@ -32,12 +28,16 @@ def detect_intent_texts(session_id, text, language_code="fr-FR"):
         raise
 
     try:
-        credentials = service_account.Credentials.from_service_account_info(creds_dict)
+        # Write credentials to temp file for compatibility
+        fd, credentials_path = tempfile.mkstemp(suffix=".json")
+        with os.fdopen(fd, 'w') as tmp:
+            json.dump(creds_dict, tmp)
+        credentials = service_account.Credentials.from_service_account_file(credentials_path)
+        os.remove(credentials_path)
     except Exception as e:
         current_app.logger.error(f"Impossible de charger la clé privée : {e}")
         raise
 
-    # Création du client Dialogflow avec les credentials
     session_client = dialogflow.SessionsClient(credentials=credentials)
     session = session_client.session_path(PROJECT_ID, session_id)
 
