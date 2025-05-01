@@ -48,10 +48,11 @@ def create_app():
     # Enregistrement des blueprints
     from .auth import auth
     from .views import views
-    from .chatbot_dialogflow import chatbot_bp
+    from .chatbot_dialogflow import dialogflow_bp
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(chatbot_bp)
+    app.register_blueprint(dialogflow_bp, url_prefix="/dialogflow")
+
 
 
     @app.errorhandler(404)
