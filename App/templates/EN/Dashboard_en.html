@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-…" crossorigin="anonymous" referrerpolicy="no-referrer"><title>Admin Dashboard – Diffusion Coefficient</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Dashboard.css') }}"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"><script>function toggleSubMenu(id, arrowId) {
+  const subMenu = document.getElementById(id);
+  const arrow = document.getElementById(arrowId);
+  const isHidden = subMenu.style.display === 'none' || subMenu.style.display === '';
+  subMenu.style.display = isHidden ? 'block' : 'none';
+  arrow.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+}</script></head><body><div class="dashboard"><aside class="sidebar" id="sidebar"><div class="logo-2"><a href="{{ url_for('views.home_en') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo" loading="lazy" style="width:100%;margin-bottom:20px"></a></div><ul><li><a href="#" onclick='toggleSubMenu("langueSubMenu","langueArrow")'>Languages<span id="langueArrow" class="arrow">&#9654;</span></a><ul id="langueSubMenu"><li><a href="{{ url_for('views.dashboard_fr') }}"><img src="https://flagsapi.com/FR/flat/64.png" class="Fr"> French</a></li><li><a href="{{ url_for('views.dashboard_en') }}"><img src="https://flagsapi.com/GB/flat/64.png" class="En"> English</a></li><li><a href="{{ url_for('views.dashboard_ar') }}"><img src="https://flagsapi.com/MA/flat/64.png" class="Ar"> Arabic</a></li></ul></li><li><a href="{{ url_for('views.calculshistory_en') }}">History</a></li><li><a href="{{ url_for('views.simulation') }}">Access Simulation</a></li><li><a href="#" onclick='toggleSubMenu("docSubMenu","docArrow")'>Documentation<span id="docArrow" class="arrow">&#9654;</span></a><ul id="docSubMenu" class="Doc-container"><li><a href="http://processs.free.fr/page/methode-unifac/3015" target="_blank">UNIFAC Method</a></li><li><a href="{{ url_for('static', filename='pdf/proprietes_gaz_liquides.pdf') }}" target="_blank">Properties of Gases and Liquids</a></li><li><a href="{{ url_for('static', filename='pdf/mitrovic2012.pdf') }}" target="_blank">Mitrovic 2012</a></li></ul></li></ul><div class="logout"><a href="{{ url_for('auth.logout') }}?lang=en" id="signout-btn" class="logout-button"><span class="logout-text"><i class="fa-solid fa-right-to-bracket"></i>  Sign Out </span><div class="icon-wrapper"><svg class="doorway" viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="80" height="60" rx="8" fill="#4f4f7f"/><rect class="door" x="0" y="0" width="40" height="60" rx="8" fill="#2a2a3a"/></svg><i class="fa-solid fa-person-walking person-icon"></i></div></a></div><script>document.getElementById('signout-btn').addEventListener('click', e => {
+      const btn = e.currentTarget;
+      if (btn.classList.contains('active')) return;
+      btn.classList.add('active');
+      btn.querySelector('.icon-wrapper').addEventListener(
+        'animationend',
+        () => window.location = btn.href,
+        { once: true }
+      );
+    });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>Diffusion Coefficient Estimation</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_en') }}"><div class="card"><h3>Compound A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Compound B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>Temperature (K)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>Mole Fraction x of A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>Experimental Diffusion Coefficient</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">Calculate</button></form></section>{% if result %}<section class="results"><div class="card"><h3>Calculated Diffusion Coefficient</h3><p>{{ result.D_AB }} cm²/s</p></div><div class="card"><h3>Calculated Error</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>Error</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- CHATBOT WIDGET CALC-DIFF -->
+{% if current_user.is_authenticated %}
+<div id="chatbot-mascot" class="chatbot-mascot">
+<img src="{{ url_for('static', filename='images/mascot.png') }}" alt="Mascot">
+</div>
+<div id="chatbot-container">
+  <div id="chat-header">
+    <h4>{{ _('CALC-DIFF Assistant') }}</h4>
+    <span id="chat-close">&times;</span>
+  </div>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <input type="text" id="chat-input" placeholder="{{ _('Ask your question...') }}">
+    <button id="chat-send">{{ _('Send') }}</button>
+  </div>
+</div>
+{% endif %}
+<style>
+  /* float mascot */
+  #chatbot-mascot {position:fixed;bottom:300px;right:20px;width:80px;cursor:pointer;animation:float 3s ease-in-out infinite;}
+  #chatbot-mascot img {width: 100%;height: auto;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  /* chatbox */
+  #chatbot-container{position:fixed;bottom:20px;right:20px;width:320px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;flex-direction:column;overflow:hidden;font-family:'Segoe UI',sans-serif;z-index:1000}
+  #chat-header{background:#20232a;color:#fff;padding:12px;display:flex;justify-content:space-between;align-items:center}
+  #chat-messages{flex:1;padding:12px;overflow-y:auto;font-size:14px;color:#333}
+  #chat-messages .user{text-align:right;color:#06c}
+  #chat-messages .bot{text-align:left;color:#20232a}
+  #chat-input-area{display:flex;border-top:1px solid #eee}
+  #chat-input{flex:1;border:none;padding:10px;font-size:14px}
+  #chat-send{background:#20232a;color:#fff;border:none;padding:0 16px;cursor:pointer;font-size:14px}
+  #chat-send:hover{background:chocolate}
+</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  console.log('🟢 Chatbot script chargé');
+
+  // Récupération des éléments
+  const m        = document.getElementById('chatbot-mascot');
+  const c        = document.getElementById('chatbot-container');
+  const closeBtn = document.getElementById('chat-close');
+  const sendBtn  = document.getElementById('chat-send');
+  const input    = document.getElementById('chat-input');
+  const msgs     = document.getElementById('chat-messages');
+  const lang     = '{{ lang }}';
+
+  // Vérification que tous les éléments sont bien trouvés
+  console.log({ m, c, closeBtn, sendBtn, input, msgs, lang });
+
+  if (!m || !c || !closeBtn || !sendBtn || !input || !msgs) {
+    console.error('❌ Un ou plusieurs éléments du chatbot sont manquants !');
+    return;  // Stoppe l’exécution si un élément manque
+  }
+
+  // Affichage / masquage du chat
+  m.addEventListener('click', () => {
+    c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
+  });
+  closeBtn.addEventListener('click', () => {
+    c.style.display = 'none';
+  });
+
+  // Fonction d’ajout de message
+  function add(text, sender) {
+    const div = document.createElement('div');
+    div.className = sender;       // "user" ou "bot"
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // Envoi du message
+  function send() {
+    const t = input.value.trim();
+    console.log('➤ Tentative d’envoi:', { message: t, lang });
+    if (!t) {
+      console.warn('⚠️ Message vide, rien à envoyer');
+      return;
+    }
+
+    add(t, 'user');
+    input.value = '';
+    sendBtn.disabled = true;
+
+    fetch("/dialogflow/chatbot", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: t, lang })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      console.log('← Réponse reçue:', data);
+      add(data.response, 'bot');
+    })
+    .catch(err => {
+      console.error('🚨 Erreur fetch:', err);
+      add('Une erreur réseau est survenue.', 'bot');
+    })
+    .finally(() => {
+      sendBtn.disabled = false;
+    });
+  }
+
+  // Événements d'envoi
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      send();
+    }
+  });
+});</script>
+</body></html>

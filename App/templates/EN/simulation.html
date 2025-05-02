@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diffusion Simulation - English</title><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon">{% raw %}<style>body{background:#111;color:#eee;font-family:Arial,sans-serif;margin:0;padding:2rem;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}#container{display:flex;background:#111;border:2px solid #444;border-radius:8px;overflow:hidden;max-width:1000px;width:100%;flex-direction:row}#canvas-wrapper{background:#000;padding:1rem;flex:1}#canvas{display:block;width:100%;height:350px;border:2px solid #444;border-radius:4px}#controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1rem;background:#222;min-width:300px}#controls h2{margin:0 0 .5rem;grid-column:1/-1;font-size:1.2rem}.control-group{display:flex;flex-direction:column}.control-group.full{grid-column:1/-1}label{margin-bottom:.25rem;font-size:.9rem}input,select{padding:.4rem;background:#333;border:1px solid #555;color:#eee;border-radius:4px;font-size:.95rem}button{padding:.6rem;background:#444;border:none;color:#eee;border-radius:4px;cursor:pointer;font-size:.95rem}button:disabled{opacity:.5;cursor:default}@media (max-width:800px){#container{flex-direction:column}#controls{grid-template-columns:1fr;min-width:auto}#controls h2{text-align:center}}</style>{% endraw %}</head><body><div id="container"><div id="canvas-wrapper"><canvas id="canvas"></canvas></div><div id="controls"><h2>Settings</h2><div class="control-group"><label for="compoundA">Compound A</label><select id="compoundA"><option>Water</option><option>Propylene</option><option>Benzene</option><option>Ethanol</option><option>Toluene</option><option>Acetaldehyde</option><option>Methyl ethylamine</option></select></div><div class="control-group"><label for="compoundB">Compound B</label><select id="compoundB"><option>Water</option><option>Propylene</option><option>Benzene</option><option>Ethanol</option><option>Toluene</option><option>Acetaldehyde</option><option>Methyl ethylamine</option></select></div><div class="control-group"><label for="temp">Temperature (K)</label><input id="temp" type="number"></div><div class="control-group"><label for="fractionA">Mole Fraction A</label><input id="fractionA" type="number" step="0.1"></div><div class="control-group"><label for="totalParticles">Number of Particles</label><input id="totalParticles" type="number"></div><div class="control-group"><label for="particleSize">Particle Size (px)</label><input id="particleSize" type="number"></div><div class="control-group full"><label for="speedFactor">Speed Factor</label><input id="speedFactor" type="number" step="0.1"></div><div class="control-group full"><button id="prepare">Prepare Simulation</button></div><div class="control-group"><button id="removeDivider" disabled="disabled">Make Porous</button></div><div class="control-group"><button id="start">▶️ Start</button></div><div class="control-group"><button id="pause">⏸️ Pause</button></div></div></div>{% raw %}<script>const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
+let particles = [];
+let animationId;
+let running = false;
+let barrierActive = true;
+const dividerX = canvas.width / 2;
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+  }
+  step(speed) {
+    let nx = this.x + (Math.random() - 0.5) * speed;
+    let ny = this.y + (Math.random() - 0.5) * speed;
+    nx = Math.max(0, Math.min(nx, canvas.width));
+    ny = Math.max(0, Math.min(ny, canvas.height));
+    if (barrierActive) {
+      if ((this.color === 'red' && nx > dividerX) || (this.color === 'blue' && nx < dividerX)) {
+        if (Math.random() < 0.1) {
+          
+        } else {
+          nx = this.x;
+        }
+      }
+    }
+    this.x = nx;
+    this.y = ny;
+  }
+  draw(size) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawDivider() {
+  ctx.strokeStyle = 'lime';
+  ctx.beginPath();
+  ctx.moveTo(dividerX, 0);
+  ctx.lineTo(dividerX, canvas.height);
+  ctx.stroke();
+}
+
+function prepareSimulation() {
+  particles = [];
+  barrierActive = true;
+  document.getElementById('removeDivider').disabled = false;
+  const fracA = parseFloat(document.getElementById('fractionA').value);
+  const total = parseInt(document.getElementById('totalParticles').value, 10) || 0;
+  const countA = Math.round(total * fracA);
+  for (let i = 0; i < total; i++) {
+    const side = i < countA ? 'left' : 'right';
+    const x = side === 'left'
+      ? Math.random() * (dividerX - 5)
+      : dividerX + Math.random() * (canvas.width - dividerX - 5);
+    const y = Math.random() * canvas.height;
+    const color = i < countA ? 'red' : 'blue';
+    particles.push(new Particle(x, y, color));
+  }
+  drawAll();
+}
+
+function drawAll() {
+  const size = parseFloat(document.getElementById('particleSize').value) || 3;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawDivider();
+  particles.forEach(p => p.draw(size));
+}
+
+function animate() {
+  const speed = parseFloat(document.getElementById('speedFactor').value) || 4;
+  particles.forEach(p => p.step(speed));
+  drawAll();
+  animationId = requestAnimationFrame(animate);
+}
+
+document.getElementById('prepare').onclick = prepareSimulation;
+document.getElementById('removeDivider').onclick = () => {
+  barrierActive = false;
+  document.getElementById('removeDivider').disabled = true;
+};
+document.getElementById('start').onclick = () => { if (!running) { running = true; animate(); } };
+document.getElementById('pause').onclick = () => { running = false; cancelAnimationFrame(animationId); };</script>{% endraw %}</body></html>

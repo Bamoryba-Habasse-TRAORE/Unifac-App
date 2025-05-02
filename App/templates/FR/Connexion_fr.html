@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connexion | CALC-DIFF</title><link rel="stylesheet" href="{{ url_for('static', filename='css/Connexion.css') }}"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon"></head><body><form action="{{ url_for('auth.login_fr') }}" method="POST"><div class="logo-1"><a href="{{ url_for('views.home_fr') }}"><img src="{{ url_for('static', filename='images/l2.png') }}" alt="Logo"></a></div><h1>Connexion</h1>{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}<ul class="flash-messages">{% for category, message in messages %}<li class="flash-{{ category }}">{{ message }}</li>{% endfor %}</ul>{% endif %} {% endwith %}<div class="inputs"><input type="email" name="email" placeholder="Email" required> <input type="password" name="password" placeholder="Mot de passe" required><div class="btn-wrapper"><button id="login-btn" type="submit">Se Connecter</button></div></div><a href="{{ url_for('auth.reset_password_fr') }}" class="forgot-password-link">Mot de passe oublié ?</a></form><script>const uname = document.querySelector('input[name="email"]');
+  const pass  = document.querySelector('input[name="password"]');
+  const btn   = document.querySelector('#login-btn');
+
+  function bounceButton() {
+    btn.classList.remove('bounce');
+    void btn.offsetWidth;
+    btn.classList.add('bounce');
+  }
+
+  btn.addEventListener('click', function(e) {
+    if (!uname.value || !pass.value) {
+      e.preventDefault();
+      bounceButton();
+    }
+  });</script>
+    </body></html>

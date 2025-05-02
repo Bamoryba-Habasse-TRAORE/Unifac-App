@@ -1,0 +1,27 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="{{ url_for('static', filename='css/Confirm.css') }}"><title>Vérification de compte</title><link rel="icon" href="{{ url_for('static', filename='images/i1.png') }}" type="image/x-icon">
+</head><body><div class="container"><h2>Vérifiez votre compte</h2><p>Un code à 6 chiffres vous a été envoyé par e-mail.<br>Entrez-le ci-dessous pour confirmer votre adresse.</p><form method="POST" action="/verify" id="confirmation-form"><div class="code-container"><input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required> <input type="number" class="code" min="0" max="9" required></div><input type="hidden" name="confirmation_code" id="confirmation_code"><button type="submit">Confirmer</button></form><form action="{{ url_for('auth.resend_confirmation', lang='fr') }}" method="get"><button type="submit" class="btn btn-outline-primary">Renvoyer le code</button></form><small class="info">Saisissez le code de confirmation reçu par email.</small></div><script>const form = document.getElementById('confirmation-form');
+    const inputs = document.querySelectorAll('.code');
+    const hiddenInput = document.getElementById('confirmation_code');
+
+    form.addEventListener('submit', function(e) {
+      let code = '';
+      inputs.forEach(input => code += input.value);
+      hiddenInput.value = code;
+    });
+
+    inputs.forEach((input, idx) => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key >= 0 && e.key <= 9) {
+          inputs[idx].value = '';
+          setTimeout(() => {
+            if (idx < inputs.length - 1) inputs[idx + 1].focus();
+          }, 10);
+        } else if (e.key === 'Backspace') {
+          setTimeout(() => {
+            if (idx > 0) inputs[idx - 1].focus();
+          }, 10);
+        }
+      });
+    });
+
+    inputs[0].focus();</script></body></html>
