@@ -31,7 +31,9 @@ def create_app():
     app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
-    app.config['DIALOGFLOW_PROJECT_ID'] = app.config.get('DIALOGFLOW_PROJECT_ID')
+    app.config['DANTE_API_KEY'] = os.getenv('DANTE_API_KEY')
+    app.config['DANTE_BOT_URL'] = os.getenv('DANTE_BOT_URL')
+
     # Configuration Babel
     app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
     app.config['BABEL_SUPPORTED_LOCALES'] = ['fr', 'en', 'ar']
@@ -50,11 +52,8 @@ def create_app():
     from .views import views
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
-    from .chatbot_bot import chatbot_bp
-    app.register_blueprint(chatbot_bp)
-
-
-
+    from .botpress_routes import bp_botpress
+    app.register_blueprint(bp_botpress, url_prefix='/api')
 
 
     @app.errorhandler(404)
