@@ -52,7 +52,8 @@ def create_app():
     from .views import views
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
-
+    from .chatbot_bot import chatbot_bp
+    app.register_blueprint(chatbot_bp, url_prefix='/api')
 
 
     @app.errorhandler(404)
