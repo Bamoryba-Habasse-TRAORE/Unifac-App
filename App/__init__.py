@@ -52,8 +52,7 @@ def create_app():
     from .views import views
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
-    from .botpress_routes import bp_botpress
-    app.register_blueprint(bp_botpress, url_prefix='/api')
+
 
 
     @app.errorhandler(404)
