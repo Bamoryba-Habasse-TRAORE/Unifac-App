@@ -13,7 +13,7 @@
         () => window.location = btn.href,
         { once: true }
       );
-    });</script></aside><main class="content" id="content"><header><div style="margin-right:270px"></div><h1>تقدير معامل الانتشار</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_ar') }}"><div class="card"><h3>المركب A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>المركب B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>درجة الحرارة (كلفن)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>الكسور المولية x للمركب A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>معامل الانتشار التجريبي</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">حساب</button></form></section>{% if result %}<section class="results"><div class="card"><h3>معامل الانتشار المحسوب</h3><p>{{ result.D_AB }} سم²/ث</p></div><div class="card"><h3>النسبة المئوية للخطأ</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>خطأ</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- واجهة الدردشة CALC-DIFF -->
+    });</script></aside><main class="content" id="content"><header><div style="margin-left:270px"></div><h1>تقدير معامل الانتشار</h1></header><section class="stats"><form method="POST" action="{{ url_for('views.dashboard_ar') }}"><div class="card"><h3>المركب A</h3><select name="compound_A" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>المركب B</h3><select name="compound_B" required>{% for key, name in compounds.items() %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></div><div class="card"><h3>درجة الحرارة (كلفن)</h3><input type="number" step="any" name="T" required></div><div class="card"><h3>الكسور المولية x للمركب A</h3><input type="number" step="any" name="x_A" required></div><div class="card"><h3>معامل الانتشار التجريبي</h3><input type="number" step="any" name="D_exp" required></div><button type="submit">حساب</button></form></section>{% if result %}<section class="results"><div class="card"><h3>معامل الانتشار المحسوب</h3><p>{{ result.D_AB }} سم²/ث</p></div><div class="card"><h3>النسبة المئوية للخطأ</h3><p>{{ result.error }} %</p></div></section>{% elif error_message %}<section class="results"><div class="card" style="color:red"><h3>خطأ</h3><p>{{ error_message }}</p></div></section>{% endif %}</main></div><!-- واجهة الدردشة CALC-DIFF -->
 {% if current_user.is_authenticated %}
 <div id="chatbot-mascot" class="chatbot-mascot">
   <img src="{{ url_for('static', filename='images/mascot.png') }}" alt="التميمة">
@@ -46,89 +46,86 @@
   #chat-send{background:#20232a;color:#fff;border:none;padding:0 16px;cursor:pointer;font-size:14px}
   #chat-send:hover{background:chocolate}
 </style>
-<script>
-// Fonction pour envoyer le message de l'utilisateur au backend Flask
-async function sendMessageToBot(userMessage, userId) {
-    try {
-        const response = await fetch('/botpress/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: userMessage,
-                userId: userId || 'anonymous',  // Utilise un ID unique si disponible
-            }),
-        });
+<script>document.addEventListener('DOMContentLoaded', () => {
+  console.log('🟢 Chatbot script chargé');
 
-        // Vérification de la réponse
-        if (!response.ok) {
-            const error = await response.json();
-            console.error('Erreur:', error);
-            displayErrorMessage();
-            return; // Gérer l'erreur ici, par exemple afficher un message à l'utilisateur
-        }
+  // Récupération des éléments
+  const m        = document.getElementById('chatbot-mascot');
+  const c        = document.getElementById('chatbot-container');
+  const closeBtn = document.getElementById('chat-close');
+  const sendBtn  = document.getElementById('chat-send');
+  const input    = document.getElementById('chat-input');
+  const msgs     = document.getElementById('chat-messages');
+  const lang     = '{{ lang }}';
 
-        // Traitement de la réponse du bot
-        const data = await response.json();
-        if (data.response && data.response.length > 0) {
-            const botMessages = data.response;
-            displayBotMessages(botMessages);
-        } else {
-            displayErrorMessage();
-        }
-    } catch (error) {
-        console.error('Erreur réseau:', error);
-        displayErrorMessage();
+  // Vérification que tous les éléments sont bien trouvés
+  console.log({ m, c, closeBtn, sendBtn, input, msgs, lang });
+
+  if (!m || !c || !closeBtn || !sendBtn || !input || !msgs) {
+    console.error('❌ Un ou plusieurs éléments du chatbot sont manquants !');
+    return;  // Stoppe l’exécution si un élément manque
+  }
+
+  // Affichage / masquage du chat
+  m.addEventListener('click', () => {
+    c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
+  });
+  closeBtn.addEventListener('click', () => {
+    c.style.display = 'none';
+  });
+
+  // Fonction d’ajout de message
+  function add(text, sender) {
+    const div = document.createElement('div');
+    div.className = sender;       // "user" ou "bot"
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // Envoi du message
+  function send() {
+    const t = input.value.trim();
+    console.log('➤ Tentative d’envoi:', { message: t, lang });
+    if (!t) {
+      console.warn('⚠️ Message vide, rien à envoyer');
+      return;
     }
-}
 
-// Fonction pour afficher les messages du bot dans l'interface utilisateur
-function displayBotMessages(messages) {
-    const chatWindow = document.getElementById('chat-window');
-    messages.forEach(message => {
-        const botMessageElement = document.createElement('div');
-        botMessageElement.classList.add('bot-message');
-        botMessageElement.textContent = message.text;
-        chatWindow.appendChild(botMessageElement);
+    add(t, 'user');
+    input.value = '';
+    sendBtn.disabled = true;
+
+    fetch("/dialogflow/chatbot", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: t, lang })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      console.log('← Réponse reçue:', data);
+      add(data.response, 'bot');
+    })
+    .catch(err => {
+      console.error('🚨 Erreur fetch:', err);
+      add('Une erreur réseau est survenue.', 'bot');
+    })
+    .finally(() => {
+      sendBtn.disabled = false;
     });
+  }
 
-    // Faire défiler le chat vers le bas pour voir les nouveaux messages
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-// Fonction pour afficher un message d'erreur dans le chat
-function displayErrorMessage() {
-    const chatWindow = document.getElementById('chat-window');
-    const errorMessage = document.createElement('div');
-    errorMessage.classList.add('bot-message');
-    errorMessage.textContent = "Désolé, une erreur est survenue. Veuillez réessayer.";
-    chatWindow.appendChild(errorMessage);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-// Fonction pour envoyer un message de l'utilisateur
-function sendUserMessage() {
-    const userMessage = document.getElementById('user-message').value.trim();
-    if (userMessage) {
-        displayUserMessage(userMessage);  // Afficher le message de l'utilisateur
-        sendMessageToBot(userMessage, "user123");  // Remplacer "user123" par un ID unique si nécessaire
-        document.getElementById('user-message').value = '';  // Effacer le champ de saisie
+  // Événements d'envoi
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      send();
     }
-}
-
-// Fonction pour afficher le message de l'utilisateur dans le chat
-function displayUserMessage(message) {
-    const chatWindow = document.getElementById('chat-window');
-    const userMessageElement = document.createElement('div');
-    userMessageElement.classList.add('user-message');
-    userMessageElement.textContent = message;
-    chatWindow.appendChild(userMessageElement);
-
-    // Faire défiler le chat vers le bas pour voir les nouveaux messages
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-</script>
+  });
+});</script>
 
 </body></html>

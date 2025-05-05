@@ -45,89 +45,86 @@
   #chat-input{flex:1;border:none;padding:10px;font-size:14px}
   #chat-send{background:#20232a;color:#fff;border:none;padding:0 16px;cursor:pointer;font-size:14px}
   #chat-send:hover{background:chocolate}
-</style>  
-<script>
-  // Fonction pour envoyer le message de l'utilisateur au backend Flask
-async function sendMessageToBot(userMessage, userId) {
-    try {
-        const response = await fetch('/botpress/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: userMessage,
-                userId: userId || 'anonymous',  // Utilise un ID unique si disponible
-            }),
-        });
+</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  console.log('🟢 Chatbot script chargé');
 
-        // Vérification de la réponse
-        if (!response.ok) {
-            const error = await response.json();
-            console.error('Erreur:', error);
-            displayErrorMessage();
-            return; // Gérer l'erreur ici, par exemple afficher un message à l'utilisateur
-        }
+  // Récupération des éléments
+  const m        = document.getElementById('chatbot-mascot');
+  const c        = document.getElementById('chatbot-container');
+  const closeBtn = document.getElementById('chat-close');
+  const sendBtn  = document.getElementById('chat-send');
+  const input    = document.getElementById('chat-input');
+  const msgs     = document.getElementById('chat-messages');
+  const lang     = '{{ lang }}';
 
-        // Traitement de la réponse du bot
-        const data = await response.json();
-        if (data.response && data.response.length > 0) {
-            const botMessages = data.response;
-            displayBotMessages(botMessages);
-        } else {
-            displayErrorMessage();
-        }
-    } catch (error) {
-        console.error('Erreur réseau:', error);
-        displayErrorMessage();
+  // Vérification que tous les éléments sont bien trouvés
+  console.log({ m, c, closeBtn, sendBtn, input, msgs, lang });
+
+  if (!m || !c || !closeBtn || !sendBtn || !input || !msgs) {
+    console.error('❌ Un ou plusieurs éléments du chatbot sont manquants !');
+    return;  // Stoppe l’exécution si un élément manque
+  }
+
+  // Affichage / masquage du chat
+  m.addEventListener('click', () => {
+    c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
+  });
+  closeBtn.addEventListener('click', () => {
+    c.style.display = 'none';
+  });
+
+  // Fonction d’ajout de message
+  function add(text, sender) {
+    const div = document.createElement('div');
+    div.className = sender;       // "user" ou "bot"
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // Envoi du message
+  function send() {
+    const t = input.value.trim();
+    console.log('➤ Tentative d’envoi:', { message: t, lang });
+    if (!t) {
+      console.warn('⚠️ Message vide, rien à envoyer');
+      return;
     }
-}
 
-// Fonction pour afficher les messages du bot dans l'interface utilisateur
-function displayBotMessages(messages) {
-    const chatWindow = document.getElementById('chat-window');
-    messages.forEach(message => {
-        const botMessageElement = document.createElement('div');
-        botMessageElement.classList.add('bot-message');
-        botMessageElement.textContent = message.text;
-        chatWindow.appendChild(botMessageElement);
+    add(t, 'user');
+    input.value = '';
+    sendBtn.disabled = true;
+
+    fetch("/dialogflow/chatbot", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: t, lang })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      console.log('← Réponse reçue:', data);
+      add(data.response, 'bot');
+    })
+    .catch(err => {
+      console.error('🚨 Erreur fetch:', err);
+      add('Une erreur réseau est survenue.', 'bot');
+    })
+    .finally(() => {
+      sendBtn.disabled = false;
     });
+  }
 
-    // Faire défiler le chat vers le bas pour voir les nouveaux messages
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-// Fonction pour afficher un message d'erreur dans le chat
-function displayErrorMessage() {
-    const chatWindow = document.getElementById('chat-window');
-    const errorMessage = document.createElement('div');
-    errorMessage.classList.add('bot-message');
-    errorMessage.textContent = "Désolé, une erreur est survenue. Veuillez réessayer.";
-    chatWindow.appendChild(errorMessage);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-// Fonction pour envoyer un message de l'utilisateur
-function sendUserMessage() {
-    const userMessage = document.getElementById('user-message').value.trim();
-    if (userMessage) {
-        displayUserMessage(userMessage);  // Afficher le message de l'utilisateur
-        sendMessageToBot(userMessage, "user123");  // Remplacer "user123" par un ID unique si nécessaire
-        document.getElementById('user-message').value = '';  // Effacer le champ de saisie
+  // Événements d'envoi
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      send();
     }
-}
-
-// Fonction pour afficher le message de l'utilisateur dans le chat
-function displayUserMessage(message) {
-    const chatWindow = document.getElementById('chat-window');
-    const userMessageElement = document.createElement('div');
-    userMessageElement.classList.add('user-message');
-    userMessageElement.textContent = message;
-    chatWindow.appendChild(userMessageElement);
-
-    // Faire défiler le chat vers le bas pour voir les nouveaux messages
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-</script>
-  
+  });
+});</script>
 </body></html>
