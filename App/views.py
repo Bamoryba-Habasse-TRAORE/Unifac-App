@@ -30,7 +30,6 @@ def home_fr():
 @views.route('/dashboard_fr', methods=['GET', 'POST'])
 @login_required
 def dashboard_fr():
-    # On passe le dictionnaire complet pour afficher les noms traduits#
     compounds = {key: compound_translations[key]["fr"] for key in compound_translations}
     if request.method == 'POST':
         try:
@@ -39,20 +38,32 @@ def dashboard_fr():
             x_A = float(request.form['x_A'].replace(',', '.'))
             T = float(request.form['T'])
             D_exp = float(request.form['D_exp'])
-            # Convertir le nom affiché en nom technique (anglais)#
+
             compound_A_english = translate_to_english(compound_A, 'fr')
             compound_B_english = translate_to_english(compound_B, 'fr')
             if compound_A_english is None or compound_B_english is None:
                 raise ValueError("Composé inconnu ou traduction non trouvée")
+
             D_AB, error = unifac_diffusion(compound_A_english, compound_B_english, x_A, T, D_exp)
             result = {'D_AB': round(D_AB, 6), 'error': round(error, 2)}
-            new_calc = Calculation(user_id=current_user.id, compound_A=compound_A, compound_B=compound_B, x_A=x_A, T=T, D_exp=D_exp, D_calc=D_AB, error=error)
+
+            new_calc = Calculation(
+                user_id=current_user.id,
+                compound_a=compound_A,
+                compound_b=compound_B,
+                x_a=x_A,
+                t=T,
+                d_exp=D_exp,
+                d_calc=D_AB,
+                error=error
+            )
             db.session.add(new_calc)
             db.session.commit()
             return render_template("FR/Dashboard_fr.html", user=current_user, result=result, compounds=compounds)
         except Exception as e:
             return render_template("FR/Dashboard_fr.html", user=current_user, error_message=str(e), compounds=compounds)
     return render_template("FR/Dashboard_fr.html", user=current_user, compounds=compounds)
+
 # ------------------- DASHBOARD EN ------------------- #
 @views.route('/home_en')
 def home_en():
@@ -64,7 +75,6 @@ def home_en():
 @views.route('/dashboard_en', methods=['GET', 'POST'])
 @login_required
 def dashboard_en():
-    # Dictionnaire complet pour afficher les noms traduits en anglais#
     compounds = {key: compound_translations[key]["en"] for key in compound_translations}
     if request.method == 'POST':
         try:
@@ -73,20 +83,32 @@ def dashboard_en():
             x_A = float(request.form['x_A'].replace(',', '.'))
             T = float(request.form['T'])
             D_exp = float(request.form['D_exp'])
-            # Convertir le nom affiché en nom technique (anglais)#
+
             compound_A_english = translate_to_english(compound_A, 'en')
             compound_B_english = translate_to_english(compound_B, 'en')
             if compound_A_english is None or compound_B_english is None:
                 raise ValueError("Unknown compound or translation not found")
+
             D_AB, error = unifac_diffusion(compound_A_english, compound_B_english, x_A, T, D_exp)
             result = {'D_AB': round(D_AB, 6), 'error': round(error, 2)}
-            new_calc = Calculation(user_id=current_user.id, compound_A=compound_A, compound_B=compound_B, x_A=x_A, T=T, D_exp=D_exp, D_calc=D_AB, error=error)
+
+            new_calc = Calculation(
+                user_id=current_user.id,
+                compound_a=compound_A,
+                compound_b=compound_B,
+                x_a=x_A,
+                t=T,
+                d_exp=D_exp,
+                d_calc=D_AB,
+                error=error
+            )
             db.session.add(new_calc)
             db.session.commit()
             return render_template("EN/Dashboard_en.html", user=current_user, result=result, compounds=compounds)
         except Exception as e:
             return render_template("EN/Dashboard_en.html", user=current_user, error_message=str(e), compounds=compounds)
     return render_template("EN/Dashboard_en.html", user=current_user, compounds=compounds)
+
 # ------------------- DASHBOARD AR ------------------- #
 @views.route('/home_ar')
 def home_ar():
@@ -98,7 +120,6 @@ def home_ar():
 @views.route('/dashboard_ar', methods=['GET', 'POST'])
 @login_required
 def dashboard_ar():
-    # Dictionnaire complet pour afficher les noms traduits en arabe#
     compounds = {key: compound_translations[key]["ar"] for key in compound_translations}
     if request.method == 'POST':
         try:
@@ -107,20 +128,32 @@ def dashboard_ar():
             x_A = float(request.form['x_A'].replace(',', '.'))
             T = float(request.form['T'])
             D_exp = float(request.form['D_exp'])
-            # Convertir le nom affiché en nom technique (anglais)#
+
             compound_A_english = translate_to_english(compound_A, 'ar')
             compound_B_english = translate_to_english(compound_B, 'ar')
             if compound_A_english is None or compound_B_english is None:
                 raise ValueError("مركب غير معروف أو الترجمة غير موجودة")
+
             D_AB, error = unifac_diffusion(compound_A_english, compound_B_english, x_A, T, D_exp)
             result = {'D_AB': round(D_AB, 6), 'error': round(error, 2)}
-            new_calc = Calculation(user_id=current_user.id, compound_A=compound_A, compound_B=compound_B, x_A=x_A, T=T, D_exp=D_exp, D_calc=D_AB, error=error)
+
+            new_calc = Calculation(
+                user_id=current_user.id,
+                compound_a=compound_A,
+                compound_b=compound_B,
+                x_a=x_A,
+                t=T,
+                d_exp=D_exp,
+                d_calc=D_AB,
+                error=error
+            )
             db.session.add(new_calc)
             db.session.commit()
             return render_template("AR/Dashboard_ar.html", user=current_user, result=result, compounds=compounds)
         except Exception as e:
-            return render_template("AR/Dashboard_ar.html", user=current_user, error_message=str(e), compounds=compounds)  
+            return render_template("AR/Dashboard_ar.html", user=current_user, error_message=str(e), compounds=compounds)
     return render_template("AR/Dashboard_ar.html", user=current_user, compounds=compounds)
+
 #....................Historiques Calcul.....................#
 @views.route('/calculs_history_fr')
 @login_required
