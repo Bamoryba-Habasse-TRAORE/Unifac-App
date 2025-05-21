@@ -43,13 +43,15 @@ class Formulaire(db.Model, UserMixin):
         return str(self.id)
 # ✅ Modèle pour stocker les historiques de calculs
 class Calculation(db.Model):
+    __tablename__ = 'calculation'
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('formulaire.id'), nullable=False)
-    compound_A = db.Column(db.String(100))
-    compound_B = db.Column(db.String(100))
-    x_A = db.Column(db.Float)
-    T = db.Column(db.Float)
-    D_exp = db.Column(db.Float)
-    D_calc = db.Column(db.Float)
+    compound_a = db.Column(db.String(100))
+    compound_b = db.Column(db.String(100))
+    x_a = db.Column(db.Float)
+    t = db.Column(db.Float)
+    d_exp = db.Column(db.Float)
+    d_calc = db.Column(db.Float)
     error = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
